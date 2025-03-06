@@ -76,9 +76,14 @@ async def command(client, message: Message):
                 
                 if args and args[0].startswith("refer_"):
                     referrer_id = int(args[0].replace("refer_", "")) 
-                    reward = 10
+                    point_map = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+                    reward = random.choice(point_map)
                     ref = await hyoshcoder.is_refferer(user_id)
                     if ref :
+                        if img:
+                            await message.reply_photo(photo=img, caption=caption, reply_markup=buttons)
+                        else:
+                            await message.reply_text(text=caption, reply_markup=buttons)
                         return
                     if referrer_id != user_id:
                         referrer = await hyoshcoder.read_user(referrer_id)

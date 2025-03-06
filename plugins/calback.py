@@ -202,22 +202,24 @@ async def cb_handler(client, query: CallbackQuery):
             shortlink = await get_shortlink(settings.SHORTED_LINK, settings.SHORTED_LINK_API, telegram_link)
             point_map = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
             share_msg = (
-                "Je viens de découvrir ce super bot ! 🚀\n"
-                f"Rejoins-moi en utilisant ce lien : {invite_link}\n"
-                "Renommer les fichiers automatiquement avec ce bot !\n"
-                "FONCTIONNALITÉS :\n"
-                "- Renommer les fichiers automatiquement\n"
-                "- Ajouter des métadonnées personnalisées\n"
-                "- Choisir le nom de votre fichier\n"
-                "- Choisir le nom de votre album\n"
-                "- Choisir le nom de votre artiste\n"
-                "- Choisir le nom de votre genre\n"
-                "- Choisir l'année de votre film\n"
-                "- Ajouter une miniature personnalisée\n"
-                "- Lier un canal pour envoyer vos vidéos\n"
-                "Et plus encore !\n"
-                "Tu peux gagner des points en t'inscrivant et en utilisant le bot !"
-            )
+                    "🌟 **Découvrez ce bot incroyablement puissant !** 🚀\n\n"
+                    f"👉 **Rejoignez-moi dès maintenant en cliquant sur ce lien :** {invite_link}\n\n"
+                    "**Transformez la gestion de vos fichiers multimédias avec ce bot !**\n\n"
+                    "**FONCTIONNALITÉS PRINCIPALES :**\n"
+                    "✅ **Renommage automatique des fichiers**\n"
+                    "✅ **Ajout de métadonnées personnalisées**\n"
+                    "✅ **Personnalisation avancée :**\n"
+                    "   - Nom du fichier\n"
+                    "   - Nom de l'album\n"
+                    "   - Nom de l'artiste\n"
+                    "   - Genre\n"
+                    "   - Année de sortie\n"
+                    "✅ **Ajout de miniatures personnalisées**\n"
+                    "✅ **Liaison à un canal pour l'envoi automatique des vidéos**\n\n"
+                    "**Et ce n'est pas tout !**\n"
+                    "🎁 **Gagnez des points en vous inscrivant et en utilisant le bot régulièrement !**\n\n"
+                    "**Rejoignez-nous dès aujourd'hui et simplifiez votre gestion de fichiers !**"
+                )
             share_msg_encoded = f"https://t.me/share/url?url={quote(invite_link)}&text={quote(share_msg)}"
             points = random.choice(point_map)
             await hyoshcoder.set_expend_points(user_id, points, unique_code)
