@@ -252,7 +252,7 @@ async def auto_rename_files(client, message):
                     if len(secantial_operations[user_id]["files"]) == secantial_operations[user_id]["expected_count"]:
                         sorted_files = sorted(
                             secantial_operations[user_id]["files"],
-                            key=lambda x: (x["season"], x["episode"])
+                            key=lambda x: (int(x["season"]), int(x["episode"])) 
                         )
 
                         user_channel = await hyoshcoder.get_user_channel(user_id)
