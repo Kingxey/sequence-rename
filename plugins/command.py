@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 ADMIN_USER_ID = settings.ADMIN
 is_restarting = False
+from . import rename
 
 
 ON = [[InlineKeyboardButton('mᴇ́tᴀᴅᴏɴᴇᴇs ᴀᴄᴛɪᴠᴇ́ᴇs', callback_data='metadata_1'),
@@ -50,7 +51,9 @@ OFF = [[InlineKeyboardButton('mᴇ́tᴀᴅᴏɴᴇᴇs ᴅᴇ́sᴀᴄᴛɪᴠ�
                                                       "viewdump",
                                                       "del_dump",
                                                       "deldump",
-                                                      "profile"
+                                                      "profile",
+                                                      "s_allfile",
+                                                      "cancel"
                                                       ]))
 async def command(client, message: Message):
     user_id = message.from_user.id
@@ -379,13 +382,40 @@ async def command(client, message: Message):
                 caption +=f"Points: {user['points']}\n"
                 
                 await message.reply_photo(img, caption=caption)
+        
+            elif command =="cancel":
+                user_id = message.from_user.id
+
+                if user_id in rename.secantial_operations:
+                    for file_info in rename.secantial_operations[user_id]["files"]:
+                        file_path = f"downloads/{file_info['file_name']}"
+                        metadata_file_path = f"Metadata/{file_info['file_name']}"
+                        
+                        if os.path.exists(file_path):
+                            os.remove(file_path)
+                        if os.path.exists(metadata_file_path):
+                            os.remove(metadata_file_path)
+
+                    del rename.secantial_operations[user_id]
+                    await message.reply_text("✅ Toutes les opérations en cours ont été annulées.")
+                else:
+                    await message.reply_text("❌ Aucune opération en cours à annuler.")
+
+                if user_id in rename.user_semaphores:
+                    rename.user_semaphores[user_id].release()
+
+                if user_id in rename.user_queue_messages:
+                    for queue_message in rename.user_queue_messages[user_id]:
+                        await queue_message.edit_text("❌ Opération annulée par l'utilisateur.")
+                    del rename.user_queue_messages[user_id]
+                    
                     
         except FloodWait as e:
             print(f"FloodWait: {e}")
             await asyncio.sleep(e.value)  
         except Exception as e:
             print(f"Erreur inattendue : {e}")
-            await message.reply_text("Une erreur s'est produite. Veuillez réessayer plus tard.")
+            await message.reply_text(f"Une erreur s'est produite. Veuillez réessayer plus tard. {e}")
 
 @Client.on_message(filters.private & filters.photo)
 async def addthumbs(client, message):
