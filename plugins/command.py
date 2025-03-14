@@ -408,6 +408,7 @@ async def command(client, message: Message):
                     for queue_message in rename.user_queue_messages[user_id]:
                         await queue_message.edit_text("❌ Opération annulée par l'utilisateur.")
                     del rename.user_queue_messages[user_id]
+                    rename.user_semaphores[user_id].release()
                     
                     
         except FloodWait as e:
