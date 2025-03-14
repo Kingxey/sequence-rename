@@ -383,32 +383,32 @@ async def command(client, message: Message):
                 
                 await message.reply_photo(img, caption=caption)
         
-            elif command =="cancel":
-                user_id = message.from_user.id
+            # elif command =="cancel":
+            #     user_id = message.from_user.id
 
-                if user_id in rename.secantial_operations:
-                    for file_info in rename.secantial_operations[user_id]["files"]:
-                        file_path = f"downloads/{file_info['file_name']}"
-                        metadata_file_path = f"Metadata/{file_info['file_name']}"
+            #     if user_id in rename.secantial_operations:
+            #         for file_info in rename.secantial_operations[user_id]["files"]:
+            #             file_path = f"downloads/{file_info['file_name']}"
+            #             metadata_file_path = f"Metadata/{file_info['file_name']}"
                         
-                        if os.path.exists(file_path):
-                            os.remove(file_path)
-                        if os.path.exists(metadata_file_path):
-                            os.remove(metadata_file_path)
+            #             if os.path.exists(file_path):
+            #                 os.remove(file_path)
+            #             if os.path.exists(metadata_file_path):
+            #                 os.remove(metadata_file_path)
 
-                    del rename.secantial_operations[user_id]
-                    await message.reply_text("✅ Toutes les opérations en cours ont été annulées.")
-                else:
-                    await message.reply_text("❌ Aucune opération en cours à annuler.")
+            #         del rename.secantial_operations[user_id]
+            #         await message.reply_text("✅ Toutes les opérations en cours ont été annulées.")
+            #     else:
+            #         await message.reply_text("❌ Aucune opération en cours à annuler.")
 
-                if user_id in rename.user_semaphores:
-                    rename.user_semaphores[user_id].release()
+            #     if user_id in rename.user_semaphores:
+            #         rename.user_semaphores[user_id].release()
 
-                if user_id in rename.user_queue_messages:
-                    for queue_message in rename.user_queue_messages[user_id]:
-                        await queue_message.edit_text("❌ Opération annulée par l'utilisateur.")
-                    del rename.user_queue_messages[user_id]
-                    rename.user_semaphores[user_id].release()
+            #     if user_id in rename.user_queue_messages:
+            #         for queue_message in rename.user_queue_messages[user_id]:
+            #             await queue_message.edit_text("❌ Opération annulée par l'utilisateur.")
+            #         del rename.user_queue_messages[user_id]
+            #         rename.user_semaphores[user_id].release()
                     
                     
         except FloodWait as e:
