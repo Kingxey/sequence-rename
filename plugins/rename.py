@@ -187,13 +187,13 @@ async def auto_rename_files(client, message):
                             path = metadata_file_path
                         else:
                             error_message = stderr.decode()
-                            await queue_message.edit_text(f"**ᴇʀʀᴇᴜʀ ᴅᴇ ᴍᴇ́ᴛᴀᴅᴏɴɴᴇ́ᴇs:**\n{error_message}")
+                            await queue_message.edit_text(f"**ᴇʀʀᴇᴜʀ ᴅᴇ ᴍᴇ́ᴛᴀᴅᴏɴɴᴇ́ᴇs**")
                     except asyncio.TimeoutError:
                         await queue_message.edit_text("**ᴄᴏᴍᴍᴀɴᴅᴇ ғғᴍᴘᴇɢ ᴇxᴘɪʀᴇ́ᴇ.**")
-                        return
+                        metadata_added = True
                     except Exception as e:
                         await queue_message.edit_text(f"**ᴜɴᴇ ᴇxᴄᴇᴘᴛɪᴏɴ s'ᴇsᴛ ᴘʀᴏᴅᴜɪᴛᴇ:**\n{str(e)}")
-                        return
+                        metadata_added = True
             else:
                 metadata_added = True
 
