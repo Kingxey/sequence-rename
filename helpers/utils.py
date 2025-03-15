@@ -8,6 +8,9 @@ import math, time
 from shortzy import Shortzy
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from scripts import Txt
+
+import ffmpeg
+
 from config import settings
 
 
@@ -180,6 +183,27 @@ def convert(seconds):
     minutes = seconds // 60
     seconds %= 60      
     return "%d:%02d:%02d" % (hour, minutes, seconds)
+
+def get_media_duration(file_path: str) -> float:
+    """
+    Récupère la durée d'un fichier vidéo ou audio en secondes avec ffmpeg.
+    """
+    try:
+        probe = ffmpeg.probe(file_path)
+        for stream in probe['streams']:
+            if stream['codec_type'] in ['video', 'audio']:
+                duration = stream['duration']
+                if isinstance(duration, (int, float)):
+                    return float(duration)
+                elif isinstance(duration, str):
+                    return float(duration)
+                else:
+                    print(f"Format de durée non pris en charge : {type(duration)}")
+                    return 0
+        return 0 
+    except Exception as e:
+        print(f"Erreur lors de la récupération de la durée : {e}")
+        return 0
 
 async def send_log(b, u):
     if settings.LOG_CHANNEL is not None:

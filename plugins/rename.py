@@ -5,7 +5,7 @@ from PIL import Image
 from datetime import datetime
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-from helpers.utils import progress_for_pyrogram, humanbytes, convert, extract_episode, extract_quality, extract_season, check_anti_nsfw
+from helpers.utils import progress_for_pyrogram, humanbytes, convert, extract_episode, extract_quality, extract_season, get_media_duration
 from database.data import hyoshcoder
 from config import settings
 import os
@@ -36,7 +36,7 @@ async def auto_rename_files(client, message):
 
     user_points = user_data.get("points", 0)
     format_template = user_data.get("format_template", "")
-    media_preference = user_data.get("media_preference", "")
+    media_preference = user_data.get("media_type", "")
     sequential_mode = user_data.get("sequential_mode", False)
     src_info = await hyoshcoder.get_src_info(user_id)  
 
@@ -52,15 +52,15 @@ async def auto_rename_files(client, message):
     if message.document:
         file_id = message.document.file_id
         file_name = message.document.file_name or "inconnu"
-        media_type = media_preference or "document"
+        media_type = media_preference if media_preference else "document"  
     elif message.video:
         file_id = message.video.file_id
-        file_name = f"{message.video.file_name or 'inconnu'}.mp4"  
-        media_type = media_preference or "video"
+        file_name = f"{message.video.file_name or 'inconnu'}.mp4"
+        media_type = media_preference if media_preference else "video"
     elif message.audio:
         file_id = message.audio.file_id
         file_name = f"{message.audio.file_name or 'inconnu'}.mp3"
-        media_type = media_preference or "audio"
+        media_type = media_preference if media_preference else "audio"
     else:
         return await message.reply_text("ᴜɴsᴜᴘᴘᴏʀᴛᴇᴅ ꜰɪʟᴇ ᴛʏᴘᴇ")
 
@@ -256,7 +256,7 @@ async def auto_rename_files(client, message):
                             video=path,
                             caption=caption,
                             thumb=ph_path,
-                            duration=0,  
+                            duration= int(get_media_duration(path)),  
                             progress=progress_for_pyrogram,
                             progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
                         )
@@ -266,7 +266,7 @@ async def auto_rename_files(client, message):
                             audio=path,
                             caption=caption,
                             thumb=ph_path,
-                            duration=0,  
+                            duration= int(get_media_duration(path)),  
                             progress=progress_for_pyrogram,
                             progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
                         )
@@ -343,7 +343,7 @@ async def auto_rename_files(client, message):
                             video=path,
                             caption=caption,
                             thumb=ph_path,
-                            duration=0,
+                            duration= int(get_media_duration(path)),
                             progress=progress_for_pyrogram,
                             progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
                         )
@@ -353,7 +353,7 @@ async def auto_rename_files(client, message):
                             audio=path,
                             caption=caption,
                             thumb=ph_path,
-                            duration=0,
+                            duration= int(get_media_duration(path)),
                             progress=progress_for_pyrogram,
                             progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
                         )
