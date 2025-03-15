@@ -190,17 +190,28 @@ def get_media_duration(file_path: str) -> float:
     """
     try:
         probe = ffmpeg.probe(file_path)
-        for stream in probe['streams']:
-            if stream['codec_type'] in ['video', 'audio']:
+        
+        if 'format' in probe and 'duration' in probe['format']:
+            duration = probe['format']['duration']
+            if isinstance(duration, (int, float)):
+                return float(duration)
+            elif isinstance(duration, str):
+                return float(duration)
+            else:
+                print(f"Format de durée non pris en charge dans 'format' : {type(duration)}")
+        
+        for stream in probe.get('streams', []):
+            if stream.get('codec_type') in ['video', 'audio'] and 'duration' in stream:
                 duration = stream['duration']
                 if isinstance(duration, (int, float)):
                     return float(duration)
                 elif isinstance(duration, str):
                     return float(duration)
                 else:
-                    print(f"Format de durée non pris en charge : {type(duration)}")
-                    return 0
-        return 0 
+                    print(f"Format de durée non pris en charge dans 'streams' : {type(duration)}")
+        
+        print("Aucune durée trouvée dans les métadonnées.")
+        return 0
     except Exception as e:
         print(f"Erreur lors de la récupération de la durée : {e}")
         return 0

@@ -13,6 +13,7 @@ import time
 import re
 import subprocess
 import asyncio
+from hachoir.metadata import extractMetadata
 import uuid
 
 # Variables globales pour gérer les opérations
@@ -238,6 +239,23 @@ async def auto_rename_files(client, message):
                 img = Image.open(ph_path).convert("RGB")
                 img = img.resize((320, 320))
                 img.save(ph_path, "JPEG")
+            
+            metadata = extractMetadata(createParser(path))
+            if metadata and metadata.has("duration"):
+                duration = metadata.get('duration').seconds
+            
+            width, height = 320, 180  
+
+            if metadata.has("width") and metadata.has("height"):
+                original_width = metadata.get("width")
+                original_height = metadata.get("height")
+
+                if original_width / original_height != 16 / 9:
+                    height = 180
+                    width = int(height * 16 / 9)
+                else:
+                    width = original_width
+                    height = original_height
 
             try:
                 if sequential_mode:
@@ -256,6 +274,8 @@ async def auto_rename_files(client, message):
                             video=path,
                             caption=caption,
                             thumb=ph_path,
+                            width=width,
+                            height=height,
                             duration= int(get_media_duration(path)),  
                             progress=progress_for_pyrogram,
                             progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
@@ -343,6 +363,8 @@ async def auto_rename_files(client, message):
                             video=path,
                             caption=caption,
                             thumb=ph_path,
+                            width=width,
+                            height=height,
                             duration= int(get_media_duration(path)),
                             progress=progress_for_pyrogram,
                             progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
