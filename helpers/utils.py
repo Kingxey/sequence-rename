@@ -18,6 +18,7 @@ SEASON_PATTERNS = [
     re.compile(r'Saison\s*(\d+)\s*\b(?:Episode|Ep|E)\s*\d+', re.IGNORECASE),
     re.compile(r'S(?P<season>\d+)(?:E|EP)\d+', re.IGNORECASE),
     re.compile(r'S(?P<season>\d+)\s*-\s*E\d+', re.IGNORECASE),
+    re.compile(r'SO?\s*(\d+)\s*EP?\s*\d+', re.IGNORECASE),
 ]
 
 # Patterns for extracting episode numbers
@@ -119,13 +120,34 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
             humanbytes(speed),            
             estimated_total_time if estimated_total_time != '' else "0 s"
         )
-        try:
-            await message.edit(
-                text=f"{ud_type}\n\n{tmp}"               
-                # reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("• ᴄᴀɴᴄᴇʟ •", callback_data="close")]])                                               
-            )
-        except:
-            pass
+
+        full_text = f"{ud_type}\n\n{tmp}"
+
+        if len(full_text) <= 4096:
+            try:
+                await message.edit(text=full_text)
+            except Exception as e:
+                print(f"Erreur lors de l'édition du message : {e}")
+                try:
+                    new_message = await message.reply(text=full_text)
+                    message = new_message
+                except Exception as e:
+                    print(f"Erreur lors de la création d'un nouveau message : {e}")
+        else:
+            chunks = [full_text[i:i + 4096] for i in range(0, len(full_text), 4096)]
+            try:
+                await message.edit(text=chunks[0])
+                for chunk in chunks[1:]:
+                    await message.reply(text=chunk)
+            except Exception as e:
+                print(f"Erreur lors de l'envoi du message : {e}")
+                try:
+                    new_message = await message.reply(text=chunks[0])
+                    message = new_message
+                    for chunk in chunks[1:]:
+                        await message.reply(text=chunk)
+                except Exception as e:
+                    print(f"Erreur lors de la création d'un nouveau message : {e}")
 
 def humanbytes(size):    
     if not size:

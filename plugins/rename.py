@@ -5,7 +5,7 @@ from PIL import Image
 from datetime import datetime
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-from helpers.utils import progress_for_pyrogram, humanbytes, convert, extract_episode, extract_quality, extract_season
+from helpers.utils import progress_for_pyrogram, humanbytes, convert, extract_episode, extract_quality, extract_season, check_anti_nsfw
 from database.data import hyoshcoder
 from config import settings
 import os
@@ -47,18 +47,19 @@ async def auto_rename_files(client, message):
         return await message.reply_text(
             "ᴠᴇᴜɪʟʟᴇᴢ ᴅ'ᴀʙᴏʀᴅ ᴅᴇ́ғɪɴɪʀ ᴜɴ ғᴏʀᴍᴀᴛ ᴅᴇ ʀᴇɴᴏᴍᴍᴀɢᴇ ᴀᴜᴛᴏᴍᴀᴛɪǫᴜᴇ ᴇɴ ᴜᴛɪʟɪsᴀɴᴛ /autorename"
         )
+    
 
     if message.document:
         file_id = message.document.file_id
-        file_name = message.document.file_name
+        file_name = message.document.file_name or "inconnu"
         media_type = media_preference or "document"
     elif message.video:
         file_id = message.video.file_id
-        file_name = f"{message.video.file_name}.mp4"
+        file_name = f"{message.video.file_name or 'inconnu'}.mp4"  
         media_type = media_preference or "video"
     elif message.audio:
         file_id = message.audio.file_id
-        file_name = f"{message.audio.file_name}.mp3"
+        file_name = f"{message.audio.file_name or 'inconnu'}.mp3"
         media_type = media_preference or "audio"
     else:
         return await message.reply_text("ᴜɴsᴜᴘᴘᴏʀᴛᴇᴅ ꜰɪʟᴇ ᴛʏᴘᴇ")
@@ -76,9 +77,14 @@ async def auto_rename_files(client, message):
         extracted_qualities = await extract_quality(file_name)
     elif src_info == "caption":
         caption = message.caption if message.caption else ""
-        episode_number = await extract_episode(caption)
-        saison = await extract_season(caption)
-        extracted_qualities = await extract_quality(caption)
+        if caption:  
+            episode_number = await extract_episode(caption)
+            saison = await extract_season(caption)
+            extracted_qualities = await extract_quality(caption)
+        else:
+            episode_number = await extract_episode(file_name)
+            saison = await extract_season(file_name)
+            extracted_qualities = await extract_quality(file_name)
     else:
         episode_number = await extract_episode(file_name)
         saison = await extract_season(file_name)
@@ -210,6 +216,7 @@ async def auto_rename_files(client, message):
                 duration = convert(message.video.duration or 0)
             else:
                 await queue_message.edit_text("Le message ne contient pas de document ou de vidéo pris en charge.")
+                del renaming_operations[file_id]
                 return
 
             caption = (
@@ -234,14 +241,40 @@ async def auto_rename_files(client, message):
 
             try:
                 if sequential_mode:
-                    log_message = await client.send_document(
-                        settings.LOG_CHANNEL,
-                        document=path,
-                        thumb=ph_path,
-                        caption=caption,
-                        progress=progress_for_pyrogram,
-                        progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
-                    )
+                    if media_type == "document":
+                        log_message = await client.send_document(
+                            settings.DUMP_CHANNEL,
+                            document=path,
+                            thumb=ph_path,
+                            caption=caption,
+                            progress=progress_for_pyrogram,
+                            progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
+                        )
+                    elif media_type == "video":
+                        log_message = await client.send_video(
+                            settings.DUMP_CHANNEL,
+                            video=path,
+                            caption=caption,
+                            thumb=ph_path,
+                            duration=0,  
+                            progress=progress_for_pyrogram,
+                            progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
+                        )
+                    elif media_type == "audio":
+                        log_message = await client.send_audio(
+                            settings.DUMP_CHANNEL,
+                            audio=path,
+                            caption=caption,
+                            thumb=ph_path,
+                            duration=0,  
+                            progress=progress_for_pyrogram,
+                            progress_args=("ᴛᴇ́ʟᴇᴠᴇʀsᴇᴍᴇɴᴛ ᴇɴ ᴄᴏᴜʀs...", queue_message, time.time()),
+                        )
+                    else:
+                        await queue_message.reply_text("❌ **ᴛʏᴘᴇ ᴅᴇ ᴍᴇ́ᴅɪᴀ ɴᴏɴ ᴘʀɪs ᴇɴ ᴄʜᴀʀɢᴇ.**")
+                        secantial_operations[user_id]["expected_count"] -= 1
+                        return
+
                     secantial_operations[user_id]["files"].append({
                         "message_id": log_message.id,
                         "file_name": renamed_file_name,
@@ -252,7 +285,10 @@ async def auto_rename_files(client, message):
                     if len(secantial_operations[user_id]["files"]) == secantial_operations[user_id]["expected_count"]:
                         sorted_files = sorted(
                             secantial_operations[user_id]["files"],
-                            key=lambda x: (int(x["season"]), int(x["episode"])) 
+                            key=lambda x: (
+                                int(x["season"]) if x["season"] is not None else 0,  
+                                int(x["episode"]) if x["episode"] is not None else 0 
+                            )
                         )
 
                         user_channel = await hyoshcoder.get_user_channel(user_id)
@@ -262,29 +298,33 @@ async def auto_rename_files(client, message):
                         try:
                             await client.get_chat(user_channel)
                             for file_info in sorted_files:
-                                await asyncio.sleep(3)  # Pause pour éviter le flood
+                                await asyncio.sleep(3)  
                                 await client.copy_message(
                                     user_channel,
-                                    settings.LOG_CHANNEL,
+                                    settings.DUMP_CHANNEL,
                                     file_info["message_id"]
                                 )
                             await queue_message.reply_text(
-                                f"✅ **Tous les fichiers ont été envoyés dans le canal :** `{user_channel}`\n"
-                                "Si des fichiers n'ont pas été complètement envoyés, ce problème est dû au flood de requêtes par Telegram. "
-                                "Veuillez m'envoyer individuellement ces fichiers."
+                                f"✅ **ᴛᴏᴜs ʟᴇs ғɪᴄʜɪᴇʀs ᴏɴᴛ ᴇ́ᴛᴇ́ ᴇɴᴠᴏʏᴇ́s ᴅᴀɴs ʟᴇ ᴄᴀɴᴀʟ :** {user_channel}\n"
+                                "sɪ ᴅᴇs ғɪᴄʜɪᴇʀs ɴ'ᴏɴᴛ ᴘᴀs ᴇ́ᴛᴇ́ ᴄᴏᴍᴘʟᴇ̀ᴛᴇᴍᴇɴᴛ ᴇɴᴠᴏʏᴇ́s, ᴄᴇ ᴘʀᴏʙʟᴇ̀ᴍᴇ ᴇsᴛ ᴅᴜ̂ ᴀᴜ ғʟᴏᴏᴅ ᴅᴇ ʀᴇǫᴜᴇ̂ᴛᴇs ᴘᴀʀ ᴛᴇʟᴇɢʀᴀᴍ.\n"
+                                "ᴠᴇᴜɪʟʟᴇᴢ ᴍ'ᴇɴᴠᴏʏᴇʀ ɪɴᴅɪᴠɪᴅᴜᴇʟʟᴇᴍᴇɴᴛ ᴄᴇs ғɪᴄʜɪᴇʀs."
                             )
                         except Exception as e:
                             await queue_message.reply_text(
-                                f"❌ **Erreur : Le canal {user_channel} n'est pas accessible. {e}\n"
+                                f"❌ **ᴇʀʀᴇᴜʀ : ʟᴇ ᴄᴀɴᴀʟ {user_channel} ɴ'ᴇsᴛ ᴘᴀs ᴀᴄᴄᴇssɪʙʟᴇ.**\n"
+                                "sɪ ʟᴇ ᴘʀᴏʙʟᴇ̀ᴍᴇ ᴘᴇʀsɪsᴛᴇ, ᴠᴇᴜɪʟʟᴇᴢ :\n"
+                                "1. ʀᴇᴛɪʀᴇʀ ʟᴇ ʙᴏᴛ ᴅᴇ ᴠᴏᴛʀᴇ ᴄᴀɴᴀʟ.\n"
+                                "2. ʀᴇɴᴏᴍᴍᴇʀ ʟᴇ ʙᴏᴛ ᴀᴅᴍɪɴɪsᴛʀᴀᴛᴇᴜʀ ᴅᴜ ᴄᴀɴᴀʟ.\n"
+                                f"ᴇʀʀᴇᴜʀ ᴅᴇ́ᴛᴀɪʟʟᴇ́ᴇ : {e}"
                             )
                             for file_info in sorted_files:
-                                await asyncio.sleep(3)  # Pause pour éviter le flood
+                                await asyncio.sleep(3)  
                                 await client.copy_message(
                                     user_id,  
-                                    settings.LOG_CHANNEL,
+                                    settings.DUMP_CHANNEL,
                                     file_info["message_id"]
                                 )
-                            await queue_message.reply_text("✅ **Tous les fichiers ont été envoyés à votre ID utilisateur.**")
+                            await queue_message.reply_text("✅ **ᴛᴏᴜs ʟᴇs ғɪᴄʜɪᴇʀs ᴏɴᴛ ᴇ́ᴛᴇ́ ᴇɴᴠᴏʏᴇ́s ᴀ̀ ᴠᴏᴛʀᴇ ɪᴅ ᴜᴛɪʟɪsᴀᴛᴇᴜʀ.**")
 
                         del secantial_operations[user_id]
                 else:
@@ -321,6 +361,8 @@ async def auto_rename_files(client, message):
                 os.remove(renamed_file_path)
                 if ph_path:
                     os.remove(ph_path)
+                    del renaming_operations[file_id]
+                    secantial_operations[user_id]["expected_count"] -= 1
                 return await queue_message.edit_text(f"❌ **Erreur :** {e}")
 
             os.remove(renamed_file_path)
@@ -337,6 +379,8 @@ async def auto_rename_files(client, message):
                 os.remove(metadata_file_path)
             if ph_path and os.path.exists(ph_path):
                 os.remove(ph_path)
-            del renaming_operations[file_id]
+            if file_id in renaming_operations :
+                del renaming_operations[file_id]
     finally:
         user_semaphore.release()
+        

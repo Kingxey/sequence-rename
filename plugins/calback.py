@@ -202,23 +202,23 @@ async def cb_handler(client, query: CallbackQuery):
             shortlink = await get_shortlink(settings.SHORTED_LINK, settings.SHORTED_LINK_API, telegram_link)
             point_map = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
             share_msg = (
-                    "🌟 **Découvrez ce bot incroyablement puissant !** 🚀\n\n"
-                    f"👉 **Rejoignez-moi dès maintenant en cliquant sur ce lien :** {invite_link}\n\n"
-                    "**Transformez la gestion de vos fichiers multimédias avec ce bot !**\n\n"
-                    "**FONCTIONNALITÉS PRINCIPALES :**\n"
-                    "✅ **Renommage automatique des fichiers**\n"
-                    "✅ **Ajout de métadonnées personnalisées**\n"
-                    "✅ **Personnalisation avancée :**\n"
-                    "   - Nom du fichier\n"
-                    "   - Nom de l'album\n"
-                    "   - Nom de l'artiste\n"
-                    "   - Genre\n"
-                    "   - Année de sortie\n"
-                    "✅ **Ajout de miniatures personnalisées**\n"
-                    "✅ **Liaison à un canal pour l'envoi automatique des vidéos**\n\n"
-                    "**Et ce n'est pas tout !**\n"
-                    "🎁 **Gagnez des points en vous inscrivant et en utilisant le bot régulièrement !**\n\n"
-                    "**Rejoignez-nous dès aujourd'hui et simplifiez votre gestion de fichiers !**"
+                    "🌟 **ᴅᴇ́ᴄᴏᴜᴠʀᴇᴢ ᴄᴇ ʙᴏᴛ ɪɴᴄʀᴏʏᴀʙʟᴇᴍᴇɴᴛ ᴘᴜɪssᴀɴᴛ !** 🚀\n\n"
+                    f"👉 **ʀᴇᴊᴏɪɢɴᴇᴢ-ᴍᴏɪ ᴅᴇ̀s ᴍᴀɪɴᴛᴇɴᴀɴᴛ ᴇɴ ᴄʟɪǫᴜᴀɴᴛ sᴜʀ ᴄᴇ ʟɪᴇɴ :** {invite_link}\n\n"
+                    "**ᴛʀᴀɴsғᴏʀᴍᴇᴢ ʟᴀ ɢᴇsᴛɪᴏɴ ᴅᴇ ᴠᴏs ғɪᴄʜɪᴇʀs ᴍᴜʟᴛɪᴍᴇ́ᴅɪᴀ ᴀᴠᴇᴄ ᴄᴇ ʙᴏᴛ !**\n\n"
+                    "**ғᴏɴᴄᴛɪᴏɴɴᴀʟɪᴛᴇ́s ᴘʀɪɴᴄɪᴘᴀʟᴇs :**\n"
+                    "✅ **ʀᴇɴᴏᴍᴍᴀɢᴇ ᴀᴜᴛᴏᴍᴀᴛɪǫᴜᴇ ᴅᴇs ғɪᴄʜɪᴇʀs**\n"
+                    "✅ **ᴀᴊᴏᴜᴛ ᴅᴇ ᴍᴇ́ᴛᴀᴅᴏɴɴᴇ́ᴇs ᴘᴇʀsᴏɴɴᴀʟɪsᴇ́ᴇs**\n"
+                    "✅ **ᴘᴇʀsᴏɴɴᴀʟɪsᴀᴛɪᴏɴ ᴀᴠᴀɴᴄᴇ́ᴇ :**\n"
+                    "   - ɴᴏᴍ ᴅᴜ ғɪᴄʜɪᴇʀ\n"
+                    "   - ɴᴏᴍ ᴅᴇ ʟ'ᴀʟʙᴜᴍ\n"
+                    "   - ɴᴏᴍ ᴅᴇ ʟ'ᴀʀᴛɪsᴛᴇ\n"
+                    "   - ɢᴇɴʀᴇ\n"
+                    "   - ᴀɴɴᴇ́ᴇ ᴅᴇ sᴏʀᴛɪᴇ\n"
+                    "✅ **ᴀᴊᴏᴜᴛ ᴅᴇ ᴍɪɴɪᴀᴛᴜʀᴇs ᴘᴇʀsᴏɴɴᴀʟɪsᴇ́ᴇs**\n"
+                    "✅ **ʟɪᴀɪsᴏɴ ᴀ̀ ᴜɴ ᴄᴀɴᴀʟ ᴘᴏᴜʀ ʟ'ᴇɴᴠᴏɪ ᴀᴜᴛᴏᴍᴀᴛɪǫᴜᴇ ᴅᴇs ᴠɪᴅᴇ́ᴏs**\n\n"
+                    "**ᴇᴛ ᴄᴇ ɴ'ᴇsᴛ ᴘᴀs ᴛᴏᴜᴛ !**\n"
+                    "🎁 **ɢᴀɢɴᴇᴢ ᴅᴇs ᴘᴏɪɴᴛs ᴇɴ ᴠᴏᴜs ɪɴsᴄʀɪᴠᴀɴᴛ ᴇᴛ ᴇɴ ᴜᴛɪʟɪsᴀɴᴛ ʟᴇ ʙᴏᴛ ʀᴇ́ɢᴜʟɪᴇ̀ʀᴇᴍᴇɴᴛ !**\n\n"
+                    "**ʀᴇᴊᴏɪɢɴᴇᴢ-ɴᴏᴜs ᴅᴇ̀s ᴀᴜᴊᴏᴜʀᴅ'ʜᴜɪ ᴇᴛ sɪᴍᴘʟɪғɪᴇᴢ ᴠᴏᴛʀᴇ ɢᴇsᴛɪᴏɴ ᴅᴇ ғɪᴄʜɪᴇʀs !**"
                 )
             share_msg_encoded = f"https://t.me/share/url?url={quote(invite_link)}&text={quote(share_msg)}"
             points = random.choice(point_map)
@@ -229,16 +229,16 @@ async def cb_handler(client, query: CallbackQuery):
                 [InlineKeyboardButton("🔙 Retour", callback_data="help")]
             ])
             caption = (
-                "**Free Points**\n\n"
-                "Vous avez choisi de soutenir notre bot. Vous pouvez le faire de plusieurs manières :\n\n"
-                "1. **Faire un don** : Soutenez-nous financièrement en envoyant un don à [Hyoshcoder](https://t.me/hyoshcoder).\n"
-                "2. **Partager le bot** : Invitez vos amis à utiliser notre bot en partageant le lien ci-dessous.\n"
-                "3. **Regarder une publicité** : Gagnez des points en regardant une petite publicité.\n\n"
-                "**Comment ça marche ?**\n"
-                "- Chaque fois que vous partagez le bot et qu'un ami s'inscrit, vous gagnez des points.\n"
-                "- Les points peuvent varier entre 5 et 20 points par action.\n\n"
-                "Merci de votre soutien ! 🙏 [Support](https://t.me/hyoshcoder)"
-            )
+                    "**ғʀᴇᴇ ᴘᴏɪɴᴛs**\n\n"
+                    "ᴠᴏᴜs ᴀᴠᴇᴢ ᴄʜᴏɪsɪ ᴅᴇ sᴏᴜᴛᴇɴɪʀ ɴᴏᴛʀᴇ ʙᴏᴛ. ᴠᴏᴜs ᴘᴏᴜᴠᴇᴢ ʟᴇ ғᴀɪʀᴇ ᴅᴇ ᴘʟᴜsɪᴇᴜʀs ᴍᴀɴɪᴇ̀ʀᴇs :\n\n"
+                    "1. **ғᴀɪʀᴇ ᴜɴ ᴅᴏɴ** : sᴏᴜᴛᴇɴᴇᴢ-ɴᴏᴜs ғɪɴᴀɴᴄɪᴇʀᴇᴍᴇɴᴛ ᴇɴ ᴇɴᴠᴏʏᴀɴᴛ ᴜɴ ᴅᴏɴ ᴀ̀ [ʜʏᴏsʜᴄᴏᴅᴇʀ](https://t.me/hyoshcoder).\n"
+                    "2. **ᴘᴀʀᴛᴀɢᴇʀ ʟᴇ ʙᴏᴛ** : ɪɴᴠɪᴛᴇᴢ ᴠᴏs ᴀᴍɪs ᴀ̀ ᴜᴛɪʟɪsᴇʀ ɴᴏᴛʀᴇ ʙᴏᴛ ᴇɴ ᴘᴀʀᴛᴀɢᴇᴀɴᴛ ʟᴇ ʟɪᴇɴ ᴄɪ-ᴅᴇssᴏᴜs.\n"
+                    "3. **ʀᴇɢᴀʀᴅᴇʀ ᴜɴᴇ ᴘᴜʙʟɪᴄɪᴛᴇ́** : ɢᴀɢɴᴇᴢ ᴅᴇs ᴘᴏɪɴᴛs ᴇɴ ʀᴇɢᴀʀᴅᴀɴᴛ ᴜɴᴇ ᴘᴇᴛɪᴛᴇ ᴘᴜʙʟɪᴄɪᴛᴇ́.\n\n"
+                    "**ᴄᴏᴍᴍᴇɴᴛ ᴄ̧ᴀ ᴍᴀʀᴄʜᴇ ?**\n"
+                    "- ᴄʜᴀǫᴜᴇ ғᴏɪs ǫᴜᴇ ᴠᴏᴜs ᴘᴀʀᴛᴀɢᴇᴢ ʟᴇ ʙᴏᴛ ᴇᴛ ǫᴜ'ᴜɴ ᴀᴍɪ s'ɪɴsᴄʀɪᴛ, ᴠᴏᴜs ɢᴀɢɴᴇᴢ ᴅᴇs ᴘᴏɪɴᴛs.\n"
+                    "- ʟᴇs ᴘᴏɪɴᴛs ᴘᴇᴜᴠᴇɴᴛ ᴠᴀʀɪᴇʀ ᴇɴᴛʀᴇ 5 ᴇᴛ 20 ᴘᴏɪɴᴛs ᴘᴀʀ ᴀᴄᴛɪᴏɴ.\n\n"
+                    "ᴍᴇʀᴄɪ ᴅᴇ ᴠᴏᴛʀᴇ sᴏᴜᴛɪᴇɴ ! 🙏 [sᴜᴘᴘᴏʀᴛ](https://t.me/hyoshcoder)"
+                )
         
         elif data.startswith("setmedia_"):
             media_type = data.split("_")[1]
